@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Tablero de gestión · BAGSA</title>
+<link rel="preload" href="assets/fonts/EncodeSans-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/EncodeSans-Bold.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  @font-face { font-family: "Encode Sans"; font-weight: 300; font-display: swap; src: url("assets/fonts/EncodeSans-Light.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 400; font-display: swap; src: url("assets/fonts/EncodeSans-Regular.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 500; font-display: swap; src: url("assets/fonts/EncodeSans-Medium.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 600; font-display: swap; src: url("assets/fonts/EncodeSans-SemiBold.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 700; font-display: swap; src: url("assets/fonts/EncodeSans-Bold.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 800; font-display: swap; src: url("assets/fonts/EncodeSans-ExtraBold.woff2") format("woff2"); }
+  @font-face { font-family: "Encode Sans"; font-weight: 900; font-display: swap; src: url("assets/fonts/EncodeSans-Black.woff2") format("woff2"); }
+
+  :root {
+    --pink: #d91b6f;
+    --teal: #0094ae;
+    --blue: #00589b;
+    --blue-bright: #2b82e6;
+    --gradient: linear-gradient(90deg, var(--pink) 0%, var(--teal) 100%);
+    --ink: #14171f;
+    --ink-2: #444b59;
+    --ink-3: #6b7280;
+    --line: #e3e7ee;
+    --line-2: #cfd6e0;
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --up: #13804a;
+    --down: #b42318;
+    --radius: 16px;
+    --font: "Encode Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --fs: 16px;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0; font-family: var(--font); font-size: var(--fs); color: var(--ink);
+    background: var(--bg); line-height: 1.45; -webkit-font-smoothing: antialiased;
+    font-variant-numeric: tabular-nums;
+  }
+  button, input, select { font: inherit; color: inherit; }
+  :focus-visible { outline: 3px solid #ffb703; outline-offset: 2px; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------- Encabezado ---------- */
+  .top { background: var(--gradient); color: #fff; position: sticky; top: 0; z-index: 30; }
+  .top-in { display: flex; align-items: center; gap: 20px; padding: 12px 24px 0; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 14px; text-decoration: none; color: #fff; margin-right: auto; }
+  .brand img { height: 34px; width: auto; display: block; }
+  .brand span { font-weight: 600; font-size: 15px; opacity: .95; border-left: 1px solid rgba(255,255,255,.45); padding-left: 14px; }
+  .top-actions { display: flex; gap: 8px; align-items: center; }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(255,255,255,.55);
+    background: rgba(255,255,255,.12); color: #fff; border-radius: 999px; padding: 7px 16px;
+    font-weight: 600; font-size: 14px; cursor: pointer; text-decoration: none;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,.24); }
+  .btn-ghost svg { width: 16px; height: 16px; }
+  .tabs { display: flex; gap: 2px; padding: 10px 16px 0; overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex: 0 0 auto; border: 0; background: transparent; color: rgba(255,255,255,.85); cursor: pointer;
+    padding: 10px 14px 12px; font-weight: 600; font-size: 14.5px; border-radius: 12px 12px 0 0;
+    display: flex; gap: 8px; align-items: center; white-space: nowrap;
+  }
+  .tab b { font-weight: 700; font-size: 12px; opacity: .8; }
+  .tab:hover { color: #fff; background: rgba(255,255,255,.12); }
+  .tab[aria-selected="true"] { background: var(--bg); color: var(--ink); }
+  .tab[aria-selected="true"] b { color: var(--pink); opacity: 1; }
+
+  /* ---------- Filtro de regional ---------- */
+  .filter { background: var(--bg); border-bottom: 1px solid var(--line); position: sticky; z-index: 25; }
+  .filter-in { display: flex; gap: 8px; align-items: center; padding: 10px 24px; overflow-x: auto; scrollbar-width: thin; }
+  .filter-in > span { font-size: 13px; color: var(--ink-3); font-weight: 600; margin-right: 4px; white-space: nowrap; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; cursor: pointer;
+    border: 1px solid var(--line-2); background: var(--surface); border-radius: 999px; padding: 5px 13px;
+    font-size: 13.5px; font-weight: 600; color: var(--ink-2);
+  }
+  .chip:hover { border-color: var(--ink-3); }
+  .chip[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .chip svg { width: 12px; height: 12px; flex: none; }
+
+  /* ---------- Pantallas ---------- */
+  main { padding: 28px 24px 40px; max-width: 1440px; margin: 0 auto; }
+  .screen[hidden] { display: none; }
+  .kicker { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--pink); margin: 0 0 6px; }
+  .screen h1 {
+    font-weight: 700; font-size: clamp(26px, 2.6vw, 40px); line-height: 1.12; margin: 0 0 6px;
+    letter-spacing: -.01em; max-width: 30ch; text-wrap: balance;
+  }
+  .lede { color: var(--ink-2); font-size: 17px; margin: 0 0 24px; max-width: 75ch; }
+  .scope { display: inline-flex; gap: 6px; align-items: center; font-size: 12.5px; font-weight: 600; color: var(--ink-3);
+    background: #e9edf3; border-radius: 999px; padding: 3px 10px; }
+  .note { font-size: 13px; color: var(--ink-3); margin: 18px 0 0; max-width: 110ch; }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; }
+  .seg { display: inline-flex; flex-wrap: wrap; background: #e6eaf0; border-radius: 20px; padding: 3px; gap: 2px; max-width: 100%; }
+  .seg button { border: 0; background: transparent; padding: 6px 14px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink-2); }
+  .seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgba(20,23,31,.15); }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 0 0 16px; }
+
+  /* 1. Resumen */
+  .kpis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+  .kpi { position: relative; display: flex; flex-direction: column; gap: 6px; min-height: 200px; }
+  .kpi .lab { font-size: 15px; font-weight: 600; color: var(--ink-2); display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+  .kpi .val { font-size: clamp(40px, 4.2vw, 64px); font-weight: 700; line-height: 1; letter-spacing: -.02em; margin-top: 6px; }
+  .kpi .val small { font-size: .38em; font-weight: 600; letter-spacing: 0; color: var(--ink-2); margin-left: 6px; }
+  .kpi .sub { font-size: 15px; color: var(--ink-2); }
+  .kpi .src { font-size: 12.5px; color: var(--ink-3); margin-top: auto; padding-top: 8px; }
+  .delta { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; font-size: 14.5px; border-radius: 8px; padding: 2px 8px; width: fit-content; }
+  .delta.up { color: var(--up); background: #e3f4ea; }
+  .delta.down { color: var(--down); background: #fde8e6; }
+  .delta.flat { color: var(--ink-2); background: #eceff3; }
+  .delta span { font-weight: 500; color: var(--ink-2); }
+  .mini-bar { height: 10px; border-radius: 999px; background: #e6eaf0; overflow: hidden; margin: 6px 0 2px; }
+  .mini-bar i { display: block; height: 100%; background: var(--blue); border-radius: 999px; }
+
+  /* 2. Mapa */
+  .map-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .map-card { padding: 10px; }
+  #map svg { width: 100%; height: auto; max-height: calc(100vh - 250px); display: block; margin: 0 auto; }
+  .pdo { fill: #eef1f5; stroke: #fff; stroke-width: .25; }
+  .pdo.has { fill: #dde3eb; }
+  .pdo:hover { fill: #cfd7e2; }
+  .mk { cursor: pointer; transition: opacity .2s; }
+  .mk path { stroke: #fff; stroke-width: .45; }
+  .mk.dim { opacity: .14; }
+  .reg-list { display: grid; gap: 10px; }
+  .reg-card {
+    display: grid; grid-template-columns: 22px 1fr auto auto auto; gap: 4px 16px; align-items: center; text-align: left;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 14px; padding: 12px 16px; cursor: pointer; width: 100%;
+  }
+  .reg-card:hover { border-color: var(--line-2); box-shadow: 0 2px 8px rgba(20,23,31,.06); }
+  .reg-card[aria-pressed="true"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+  .reg-card.dim { opacity: .5; }
+  .reg-card .nm { font-weight: 700; font-size: 17px; }
+  .reg-card .n { text-align: right; }
+  .reg-card .n b { display: block; font-size: 20px; font-weight: 700; line-height: 1.1; }
+  .reg-card .n span { font-size: 12px; color: var(--ink-3); }
+  .reg-head { display: grid; grid-template-columns: 22px 1fr auto auto auto; gap: 16px; padding: 0 16px; font-size: 12px; color: var(--ink-3); font-weight: 600; }
+
+  /* 3. Comparativo */
+  .bars { display: grid; gap: 14px; }
+  .bar-row { display: grid; grid-template-columns: 150px minmax(0, 1fr) 170px; gap: 16px; align-items: center; cursor: pointer; border-radius: 10px; padding: 4px 6px; }
+  .bar-row:hover { background: #f5f7fa; }
+  .bar-row .nm { font-weight: 700; font-size: 17px; display: flex; gap: 8px; align-items: center; }
+  .bar-row .track { height: 34px; position: relative; }
+  .bar-row .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 0 4px 4px 0; transition: width .5s cubic-bezier(.2,.7,.2,1); min-width: 2px; }
+  .bar-row .v { font-size: 20px; font-weight: 700; text-align: right; }
+  .bar-row .v span { display: block; font-size: 13px; font-weight: 500; color: var(--ink-3); }
+  .bar-row.dim { opacity: .35; }
+
+  /* 4. Demanda */
+  .dem-grid { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+  #dchart svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .reading { font-size: 18px; font-weight: 500; margin: 14px 0 0; padding: 12px 16px; background: #f3f6fa; border-left: 4px solid var(--pink); border-radius: 0 10px 10px 0; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13.5px; color: var(--ink-2); margin-top: 8px; }
+  .legend i { display: inline-block; width: 22px; height: 0; border-top: 3px solid; vertical-align: middle; margin-right: 6px; }
+  .legend i.band { height: 12px; border: 0; background: #fbe3ee; border-radius: 3px; }
+  .sef-big { font-size: 56px; font-weight: 700; line-height: 1; letter-spacing: -.02em; }
+  .stack { display: flex; height: 40px; border-radius: 6px; overflow: hidden; gap: 2px; margin: 14px 0 8px; }
+  .stack span { display: flex; align-items: center; padding: 0 10px; color: #fff; font-weight: 700; font-size: 14px; white-space: nowrap; overflow: hidden; }
+  .kv { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; font-size: 14.5px; margin-top: 12px; }
+  .kv dt { color: var(--ink-2); }
+  .kv dd { margin: 0; font-weight: 700; text-align: right; }
+
+  /* 5. Presupuesto */
+  .pgrid { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 20px; align-items: start; }
+  .prog { display: grid; gap: 22px; }
+  .prog-row .top-l { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap; }
+  .prog-row .t { font-weight: 700; font-size: 18px; }
+  .prog-row .p { font-weight: 700; font-size: 26px; }
+  .prog-row .track { position: relative; height: 22px; border-radius: 6px; background: #e6eaf0; margin: 8px 0 6px; overflow: visible; }
+  .prog-row .fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--blue); transition: width .6s cubic-bezier(.2,.7,.2,1); }
+  .prog-row .half { position: absolute; top: -6px; bottom: -6px; left: 50%; border-left: 2px dashed var(--ink-3); }
+  .prog-row .meta { font-size: 14px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .prog-row.small .t { font-size: 15.5px; } .prog-row.small .p { font-size: 18px; } .prog-row.small .track { height: 12px; }
+  .stat { display: flex; flex-direction: column; gap: 4px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .stat:first-of-type { border-top: 0; padding-top: 0; }
+  .stat b { font-size: 30px; font-weight: 700; line-height: 1.1; }
+  .stat span { color: var(--ink-2); font-size: 14.5px; }
+
+  /* 6. Obras */
+  .ob-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .ob { display: flex; flex-direction: column; gap: 10px; text-align: left; cursor: pointer; border: 1px solid var(--line); background: var(--surface); border-radius: var(--radius); padding: 18px; }
+  .ob:hover { border-color: var(--line-2); box-shadow: 0 4px 14px rgba(20,23,31,.07); }
+  .ob h3 { margin: 0; font-size: 18px; line-height: 1.25; font-weight: 700; }
+  .ob .meta { font-size: 13.5px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+  .ob .meta .r { display: inline-flex; align-items: center; gap: 6px; }
+  .st { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; font-weight: 700; border-radius: 999px; padding: 3px 10px; width: fit-content; }
+  .st.ej { background: #fff1e0; color: #8a4b00; }
+  .st.fi { background: #e3f4ea; color: #0f6b3d; }
+  .st.pl { background: #eceff3; color: #3c4452; }
+  .ob .pbar { height: 10px; background: #e6eaf0; border-radius: 999px; overflow: hidden; }
+  .ob .pbar i { display: block; height: 100%; border-radius: 999px; }
+  .ob .prow { display: flex; justify-content: space-between; font-size: 14px; font-weight: 600; }
+  .ob .foot { margin-top: auto; display: flex; justify-content: space-between; gap: 10px; font-size: 13.5px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 10px; }
+  .ob .foot b { color: var(--ink); }
+  .ob-sec { font-size: 15px; font-weight: 700; color: var(--ink-2); margin: 26px 0 12px; display: flex; gap: 10px; align-items: center; }
+  .ob-sec:first-child { margin-top: 0; }
+  dialog { border: 0; border-radius: 18px; padding: 0; max-width: min(760px, 94vw); width: 100%; box-shadow: 0 20px 60px rgba(0,0,0,.25); }
+  dialog::backdrop { background: rgba(10,14,22,.5); }
+  .dlg { padding: 26px 28px; }
+  .dlg h2 { margin: 8px 0 14px; font-size: 24px; line-height: 1.2; }
+  .dlg dl { display: grid; grid-template-columns: 190px 1fr; gap: 10px 18px; margin: 0; font-size: 15px; }
+  .dlg dt { color: var(--ink-3); font-weight: 600; }
+  .dlg dd { margin: 0; }
+  .dlg .close { position: sticky; float: right; top: 0; border: 0; background: #eceff3; border-radius: 999px; width: 36px; height: 36px; cursor: pointer; font-size: 20px; line-height: 1; }
+
+  /* 7. Localidades */
+  .tbar { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 14px; align-items: center; }
+  .tbar input, .tbar select { border: 1px solid var(--line-2); border-radius: 10px; padding: 9px 12px; background: var(--surface); font-size: 15px; }
+  .tbar input { min-width: 260px; flex: 1 1 260px; max-width: 420px; }
+  .tcount { font-size: 14px; color: var(--ink-3); margin-left: auto; }
+  .twrap { overflow: auto; max-height: calc(100vh - 290px); border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { position: sticky; top: 0; background: #f7f9fb; z-index: 1; font-size: 13px; color: var(--ink-2); }
+  th button { border: 0; background: none; font-weight: 700; cursor: pointer; padding: 0; }
+  th[aria-sort="ascending"] button::after { content: " ▲"; font-size: 10px; }
+  th[aria-sort="descending"] button::after { content: " ▼"; font-size: 10px; }
+  td.n, th.n { text-align: right; }
+  td.nd { color: #a0a7b3; }
+  tbody tr { cursor: pointer; }
+  tbody tr:hover td { background: #f7f9fb; }
+  tr.det td { white-space: normal; background: #fafbfd; cursor: default; }
+  tr.det dl { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 8px 20px; margin: 4px 0; }
+  tr.det dt { font-size: 12px; color: var(--ink-3); font-weight: 600; }
+  tr.det dd { margin: 0; }
+  tfoot td { font-weight: 700; background: #f7f9fb; position: sticky; bottom: 0; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; flex: none; }
+
+  /* Tooltip */
+  .tip { position: fixed; z-index: 100; pointer-events: none; background: #14171f; color: #fff; font-size: 13.5px; line-height: 1.4;
+    padding: 9px 12px; border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.25); max-width: 280px; opacity: 0; transition: opacity .12s; }
+  .tip.on { opacity: 1; }
+  .tip b { font-size: 14.5px; }
+  .tip small { color: #c3c9d4; }
+
+  .foot-bar { text-align: center; font-size: 12.5px; color: var(--ink-3); padding: 0 24px 24px; }
+  .foot-bar a { color: inherit; }
+  .hint { display: none; }
+
+  /* ---------- Modo presentación ---------- */
+  body.pres { --fs: 18px; overflow: hidden; }
+  body.pres main { max-width: none; height: calc(100vh - var(--hdr, 140px)); overflow: auto; padding: 2.2vh 3vw 2vh; }
+  body.pres .screen h1 { font-size: clamp(30px, 3.1vw, 54px); }
+  body.pres .lede { font-size: clamp(17px, 1.3vw, 22px); }
+  body.pres .kpi { min-height: 28vh; }
+  body.pres .kpi .val { font-size: clamp(48px, 5vw, 92px); }
+  body.pres .foot-bar { display: none; }
+  body.pres .hint { display: block; position: fixed; right: 18px; bottom: 12px; font-size: 12px; color: var(--ink-3); }
+  body.pres #map svg { height: calc(100vh - var(--hdr, 140px) - 300px); max-height: none; width: auto; max-width: 100%; }
+  body.pres .twrap { max-height: calc(100vh - var(--hdr, 140px) - 230px); }
+
+  @media (max-width: 1000px) {
+    .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .map-grid, .dem-grid, .pgrid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .top-in, .filter-in { padding-left: 16px; padding-right: 16px; }
+    main { padding: 20px 16px 32px; }
+    .brand span { display: none; }
+    .kpis { grid-template-columns: 1fr; }
+    .kpi { min-height: 0; }
+    .bar-row { grid-template-columns: 96px minmax(0, 1fr) 96px; gap: 8px; }
+    .bar-row .nm { font-size: 14px; } .bar-row .v { font-size: 16px; }
+    .reg-card, .reg-head { grid-template-columns: 18px 1fr auto auto; }
+    .reg-card .n:nth-of-type(4), .reg-head span:nth-child(5) { display: none; }
+    .dlg dl { grid-template-columns: 1fr; }
+    .btn-ghost .lbl { display: none; }
+    a.btn-ghost { display: none; }
+  }
+  @media print { .top, .filter { position: static; } }
+</style>
+</head>
+<body>
+
+<header class="top" id="top">
+  <div class="top-in">
+    <a class="brand" href="tablero.html" aria-label="Tablero de gestión de BAGSA">
+      <img src="assets/logo-bagsa-blanco.png" alt="BAGSA">
+      <span>Tablero de gestión</span>
+    </a>
+    <div class="top-actions">
+      <a class="btn-ghost" href="mapa.html" title="Ir a la base de datos completa"><span class="lbl">Base de datos</span></a>
+      <button class="btn-ghost" id="presBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+        <span class="lbl">Presentar</span>
+      </button>
+    </div>
+  </div>
+  <nav class="tabs" role="tablist" aria-label="Pantallas del tablero" id="tabs"></nav>
+</header>
+<div class="filter" id="filter"><div class="filter-in" id="chips" role="group" aria-label="Filtrar por regional"><span>Regional</span></div></div>
+
+<main id="main">
+
+  <!-- 1. Resumen ejecutivo -->
+  <section class="screen" id="s-resumen" role="tabpanel" aria-labelledby="t-resumen">
+    <p class="kicker">Resumen ejecutivo</p>
+    <h1 id="h-resumen"></h1>
+    <p class="lede" id="l-resumen"></p>
+    <div class="kpis" id="kpis"></div>
+    <p class="note" id="n-resumen"></p>
+  </section>
+
+  <!-- 2. Mapa por regional -->
+  <section class="screen" id="s-mapa" role="tabpanel" aria-labelledby="t-mapa" hidden>
+    <p class="kicker">Mapa por regional</p>
+    <h1 id="h-mapa"></h1>
+    <p class="lede">Tocá una regional en la lista o un punto en el mapa para filtrar todo el tablero.</p>
+    <div class="map-grid">
+      <div class="card map-card"><div id="map"></div></div>
+      <div>
+        <div class="reg-head" aria-hidden="true"><span></span><span>Regional</span><span>Localidades</span><span>Usuarios</span><span>Consumo (m³)</span></div>
+        <div class="reg-list" id="regList"></div>
+        <p class="note">Cada punto es una localidad, ubicada en el centro de su partido (posición aproximada). Color y forma identifican la regional. Usuarios y consumo: planilla de noviembre de 2025.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Comparativo -->
+  <section class="screen" id="s-comparativo" role="tabpanel" aria-labelledby="t-comparativo" hidden>
+    <p class="kicker">Comparativo entre regionales</p>
+    <h1 id="h-comp"></h1>
+    <p class="lede" id="l-comp"></p>
+    <div class="toolbar"><div class="seg" id="compSeg" role="group" aria-label="Medida"></div></div>
+    <div class="card"><div class="bars" id="bars"></div></div>
+    <p class="note" id="n-comp"></p>
+  </section>
+
+  <!-- 4. Demanda y SEF -->
+  <section class="screen" id="s-demanda" role="tabpanel" aria-labelledby="t-demanda" hidden>
+    <p class="kicker">Demanda mensual y subsidios</p>
+    <h1 id="h-dem"></h1>
+    <div class="toolbar">
+      <div class="seg" id="demSeg" role="group" aria-label="Tipo de gas"></div>
+      <span class="scope" id="demScope"></span>
+    </div>
+    <div class="dem-grid">
+      <div class="card">
+        <div id="dchart"></div>
+        <div class="legend" id="dleg"></div>
+        <p class="reading" id="dread"></p>
+      </div>
+      <div class="card" id="sef"></div>
+    </div>
+    <p class="note">Demanda en miles de m³ por día, promedio de cada mes (presentación del 19/08/2026). Los totales anuales se calculan multiplicando el promedio diario por los días de cada mes. SEF: Subsidios Energéticos Focalizados (Decreto 943/2025), vigentes desde el 31/01/2026; cuentan solo usuarios residenciales.</p>
+  </section>
+
+  <!-- 5. Presupuesto -->
+  <section class="screen" id="s-presupuesto" role="tabpanel" aria-labelledby="t-presupuesto" hidden>
+    <p class="kicker">Presupuesto 2026</p>
+    <h1 id="h-pres"></h1>
+    <p class="lede">Ejecutado en el primer semestre (I y II trimestre) contra lo previsto para todo 2026. La línea punteada marca la mitad del año.</p>
+    <div class="pgrid">
+      <div class="card"><div class="prog" id="prog"></div></div>
+      <div>
+        <div class="card" id="pstats"></div>
+        <div class="card" style="margin-top:16px"><p class="kicker" style="color:var(--ink-2)">Gastos de capital por obra</p><div class="prog" id="progObras"></div></div>
+      </div>
+    </div>
+    <p class="note">Millones de pesos corrientes (sin ajustar por inflación). Fuente: presentación del 19/08/2026, actualización a julio de 2026. Los aportes de capital 2026 corresponden al presupuesto aprobado. El financiamiento de Gasoducto Cerealero y Rancagua–Arroyo Dulce depende de la habilitación de cupos de Economía.</p>
+  </section>
+
+  <!-- 6. Obras -->
+  <section class="screen" id="s-obras" role="tabpanel" aria-labelledby="t-obras" hidden>
+    <p class="kicker">Obras</p>
+    <h1 id="h-obras"></h1>
+    <p class="lede" id="l-obras"></p>
+    <div class="toolbar"><div class="seg" id="obSeg" role="group" aria-label="Estado"></div></div>
+    <div id="obras"></div>
+    <p class="note">Fuente: Informe de obras BAGSA, octubre de 2026. Conexiones proyectadas e inversión valorizada a junio de 2026: presentación del 19/08/2026. Tocá una tarjeta para ver el estado de situación y la memoria técnica.</p>
+  </section>
+
+  <!-- 7. Localidades -->
+  <section class="screen" id="s-localidades" role="tabpanel" aria-labelledby="t-localidades" hidden>
+    <p class="kicker">Detalle por localidad</p>
+    <h1 id="h-loc"></h1>
+    <div class="tbar">
+      <input id="lq" type="search" placeholder="Buscá una localidad o partido…" aria-label="Buscar localidad" autocomplete="off">
+      <select id="lg" aria-label="Tipo de gas"><option value="">GN y GLP</option><option value="GN">Gas natural (GN)</option><option value="GLP">Gas licuado (GLP)</option></select>
+      <span class="tcount" id="lc" aria-live="polite"></span>
+    </div>
+    <div class="twrap"><table id="lt"><thead></thead><tbody></tbody><tfoot></tfoot></table></div>
+    <p class="note">Usuarios y consumo: planilla de noviembre de 2025. SEF: residenciales con Subsidio Energético Focalizado. SGP: servicio general pequeño (comercios y pequeñas industrias). Conectados desde 2020 y potenciales: datos para el informe de apertura de sesiones 2027 (Del Carril y Polvaredas comparten un único dato). N/I: sin dato informado. Tocá una fila para ver la oficina comercial.</p>
+  </section>
+</main>
+
+<p class="foot-bar">Uso interno · Unidad de Gestión de BAGSA · Datos al 28/10/2026 · <a href="mapa.html">Base de datos energética</a></p>
+<p class="hint" aria-hidden="true">← → cambiar pantalla · Esc salir</p>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+<dialog id="dlg"><div class="dlg" id="dlgBody"></div></dialog>
+
+<script src="data/tablero.js"></script>
+<script src="assets/tablero-app.js"></script>
+</body>
+</html>
